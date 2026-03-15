@@ -1,0 +1,34 @@
+# Compiled files
+*.o
+*.riscv
+*.elf
+*.x
+*.bin
+*.hex
+
+# Build directories
+build/
+results/
+tests/bin/
+external/
+
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*~
+*.log
+*.tmp
+
+# Executables
+*.exe
+*.out
+simulator.exe
+simulator
+
+*.sh
+
