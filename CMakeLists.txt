@@ -5,30 +5,21 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# ============================================
-# Пользовательские опции
-# ============================================
+
 option(RUN_TESTS "Build test executable" OFF)
 option(CPU_DEBUG "Enable CPU debug output" OFF)
 option(CPU_STEP_LIMIT "Enable CPU step limit (0 = unlimited)" ON)
 
-# ============================================
-# Настройки лимита шагов
-# ============================================
+
 set(CPU_MAX_STEPS "10000" CACHE STRING "Maximum number of steps before halt (0 = unlimited)")
 
-# ============================================
-# Общие настройки компиляции
-# ============================================
+
 set(COMMON_COMPILE_OPTIONS
     $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall>
     $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wextra>
     $<$<CXX_COMPILER_ID:MSVC>:/W4>
 )
 
-# ============================================
-# Определения препроцессора
-# ============================================
 set(COMMON_DEFINITIONS
     $<$<BOOL:${CPU_DEBUG}>:CPU_DEBUG=1>
 )
@@ -39,9 +30,7 @@ else()
     list(APPEND COMMON_DEFINITIONS CPU_MAX_STEPS=0)
 endif()
 
-# ============================================
-# ELFIO библиотека (для загрузки ELF файлов)
-# ============================================
+
 # Проверяем, существует ли папка с библиотекой
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/elfio")
     add_library(elfio INTERFACE)
@@ -49,36 +38,32 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/elfio")
         ${CMAKE_CURRENT_SOURCE_DIR}/external/elfio
     )
     set(ELFIO_FOUND ON)
-    message(STATUS "✅ ELFIO library found")
+    message(STATUS " ELFIO library found")
 else()
     set(ELFIO_FOUND OFF)
-    message(STATUS "⚠️ ELFIO library NOT found - ELF loading disabled")
+    message(STATUS " ELFIO library NOT found - ELF loading disabled")
 endif()
 
-# ============================================
-# Поиск RISC-V тулчейна (для тестов)
-# ============================================
+
 find_program(RISCV_AS riscv32-unknown-elf-as)
 find_program(RISCV_LD riscv32-unknown-elf-ld)
 find_program(RISCV_OBJCOPY riscv32-unknown-elf-objcopy)
 
 if(RISCV_AS AND RISCV_LD)
-    message(STATUS "✅ RISC-V toolchain found: ${RISCV_AS}")
+    message(STATUS "RISC-V toolchain found: ${RISCV_AS}")
     set(HAS_RISCV_TOOLCHAIN ON)
 else()
-    message(STATUS "⚠️ RISC-V toolchain NOT found - ELF tests will be skipped")
+    message(STATUS " RISC-V toolchain NOT found - ELF tests will be skipped")
     set(HAS_RISCV_TOOLCHAIN OFF)
 endif()
 
-# ============================================
-# Основной эмулятор
-# ============================================
+
 set(EMULATOR_SOURCES
     source/cpu.cpp
     source/decoder.cpp
     source/execute.cpp
     source/machine.cpp
-    source/elf_loader.cpp      # ← Новый файл загрузчика
+    source/elf_loader.cpp
     source/main.cpp
 )
 
@@ -93,14 +78,12 @@ if(ELFIO_FOUND)
     target_compile_definitions(cpu_emulator PRIVATE ELFIO_ENABLED=1)
 endif()
 
-# ============================================
-# Тестовый исполняемый файл
-# ============================================
+
 if(RUN_TESTS)
     set(TEST_SOURCES
         source/cpu.cpp
         source/decoder.cpp
-        source/execute.cpp      # ← Исправлено: было executor.cpp
+        source/execute.cpp
         source/machine.cpp
         tests/test.cpp
     )
@@ -120,9 +103,7 @@ if(RUN_TESTS)
     message(STATUS "Building test executable: cpu_emulator_tests")
 endif()
 
-# ============================================
-# Информация о сборке
-# ============================================
+
 message(STATUS "========================================")
 message(STATUS "Build configuration:")
 message(STATUS "  CPU_DEBUG: ${CPU_DEBUG}")

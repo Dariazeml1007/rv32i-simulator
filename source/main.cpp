@@ -1,11 +1,12 @@
-// source/main.cpp
 #include <iostream>
-#include "machine.hpp"
+
 #include "elf_loader.hpp"
+#include "machine.hpp"
 
 int main(int argc, char** argv)
 {
-    if (argc != 2) {
+    if (argc != 2)
+    {
         std::cerr << "Usage: " << argv[0] << " <elf_file>" << std::endl;
         return 1;
     }
@@ -13,7 +14,8 @@ int main(int argc, char** argv)
     Machine machine(64 * 1024);
 
     uint32_t entry_point = 0;
-    if (!ElfLoader::load(argv[1], machine, entry_point)) {
+    if (!ElfLoader::load(argv[1], machine, entry_point))
+    {
         return 1;
     }
 
